@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>ToDo App</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500&display=swap" rel="stylesheet" />
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Roboto', sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #153677, #4e085f);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 540px;
+            background: #fff;
+            border-radius: 10px;
+            padding: 40px 30px 70px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .todo-app h2 {
+            color: #002765;
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .todo-app img {
+            width: 30px;
+            margin-left: 10px;
+        }
+
+        .row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: #edeef0;
+            border-radius: 30px;
+            padding: 10px 20px;
+            margin-bottom: 25px;
+            transition: background 0.3s;
+        }
+
+        .row:hover {
+            background: #d5d9dc;
+        }
+
+        .row input {
+            flex: 1;
+            border: none;
+            outline: none;
+            background: transparent;
+            padding: 10px;
+            font-size: 1rem;
+        }
+
+        button {
+            border: none;
+            outline: none;
+            padding: 10px 30px;
+            background: #ff5945;
+            color: #fff;
+            font-size: 1rem;
+            cursor: pointer;
+            border-radius: 40px;
+            transition: background 0.3s, transform 0.2s;
+        }
+
+        button:hover {
+            background: #e04c3d;
+            transform: scale(1.05);
+        }
+
+        ul {
+            padding-left: 0;
+        }
+
+        ul li {
+            list-style: none;
+            font-size: 1rem;
+            padding: 12px 8px 12px 50px;
+            user-select: none;
+            cursor: pointer;
+            position: relative;
+            transition: background 0.3s;
+        }
+
+        ul li:hover {
+            background: #f1f1f1;
+        }
+
+        ul li::before {
+            content: '';
+            position: absolute;
+            height: 28px;
+            width: 28px;
+            border-radius: 50%;
+            background-size: cover;
+            background-position: center;
+            top: 12px;
+            left: 8px;
+            background-image: url('https://t3.ftcdn.net/jpg/04/59/56/64/240_F_459566437_7X1QT5PsutpSl08W8sx8LcR28TeFe2NC.jpg');
+            transition: background 0.3s;
+        }
+
+        ul li.checked {
+            color: #555;
+            text-decoration: line-through;
+        }
+
+        ul li.checked::before {
+            background-image: url('https://cdn-icons-png.flaticon.com/512/4436/4436481.png');
+        }
+
+        ul li span {
+            position: absolute;
+            right: 0;
+            top: 5px;
+            width: 40px;
+            height: 40px;
+            font-size: 22px;
+            color: #555;
+            line-height: 40px;
+            text-align: center;
+            border-radius: 50%;
+            cursor: pointer;
+            transition: background 0.3s, color 0.3s;
+        }
+
+        ul li span:hover {
+            background: #ff5945;
+            color: #fff;
+        }
+
+        @media (max-width: 600px) {
+            .row {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            button {
+                width: 100%;
+                margin-top: 10px;
+            }
+
+            ul li {
+                font-size: 0.9rem;
+                padding: 10px 8px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="todo-app">
+            <h2>ToDo App <img src="https://cdn-icons-png.flaticon.com/512/4294/4294574.png" alt="ToDo Icon"></h2>
+            <div class="row">
+                <input type="text" id="myInput" placeholder="Add a new task..." />
+                <button type="button" onclick="addTask()">ADD</button>
+            </div>
+            <ul id="myUL">
+                <!-- Task items will be added here dynamically -->
+            </ul>
+        </div>
+    </div>
+
+    <script>
+        const myInput = document.getElementById("myInput");
+        const myUL = document.getElementById("myUL");
+
+        function addTask() {
+            if (myInput.value.trim() === "") {
+                alert("You must write something!");
+            } else {
+                let li = document.createElement("li");
+                li.textContent = myInput.value.trim();
+                myUL.appendChild(li);
+
+                let span = document.createElement("span");
+                span.innerHTML = "\u00d7"; // × character
+                li.appendChild(span);
+
+                saveData();
+            }
+            myInput.value = "";
+        }
+
+        myUL.addEventListener("click", function (ev) {
+            if (ev.target.tagName === "LI") {
+                ev.target.classList.toggle("checked");
+                saveData();
+            } else if (ev.target.tagName === "SPAN") {
+                ev.target.parentNode.remove();
+                saveData();
+            }
+        });
+
+        function saveData() {
+            localStorage.setItem("data", myUL.innerHTML);
+        }
+
+        function showTask() {
+            const data = localStorage.getItem("data");
+            if (data) {
+                myUL.innerHTML = data;
+            }
+        }
+
+        showTask();
+    </script>
+</body>
+</html>

@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Product Listing with Ratings</title>
+<style>
+  body {
+    font-family: 'Poppins', sans-serif;
+    background: #f5f9ff;
+    max-width: 900px;
+    margin: auto;
+    padding: 20px;
+  }
+  h1 {
+    text-align: center;
+    color: #0077cc;
+  }
+  .filters {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+    margin-bottom: 20px;
+  }
+  select {
+    padding: 8px 12px;
+    font-size: 16px;
+  }
+  .product-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fill,minmax(250px,1fr));
+    gap: 20px;
+  }
+  .product-card {
+    background: white;
+    padding: 15px;
+    border-radius: 12px;
+    box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+  }
+  .product-card h3 {
+    color: #0077cc;
+    margin: 0 0 10px;
+  }
+  .product-card p {
+    margin: 4px 0;
+  }
+  .rating {
+    color: #f39c12; /* gold */
+  }
+</style>
+</head>
+<body>
+
+<h1>🛒 Product Listing with Ratings</h1>
+
+<div class="filters">
+  <select id="filterCategory">
+    <option value="all">All Categories</option>
+    <option value="electronics">Electronics</option>
+    <option value="clothing">Clothing</option>
+  </select>
+
+  <select id="sortPrice">
+    <option value="default">Sort by Price</option>
+    <option value="low">Low to High</option>
+    <option value="high">High to Low</option>
+  </select>
+
+  <select id="sortRating">
+    <option value="default">Sort by Rating</option>
+    <option value="high">High to Low</option>
+    <option value="low">Low to High</option>
+  </select>
+</div>
+
+<div class="product-list" id="productContainer"></div>
+
+<script>
+  const products = [
+    { name: 'Phone', category: 'electronics', price: 500, rating: 4.5 },
+    { name: 'Shirt', category: 'clothing', price: 40, rating: 3.8 },
+    { name: 'Laptop', category: 'electronics', price: 1000, rating: 4.8 },
+    { name: 'Jeans', category: 'clothing', price: 60, rating: 4.2 }
+  ];
+
+  const container = document.getElementById('productContainer');
+  const filterCategory = document.getElementById('filterCategory');
+  const sortPrice = document.getElementById('sortPrice');
+  const sortRating = document.getElementById('sortRating');
+
+  function renderProducts(items) {
+    container.innerHTML = '';
+    items.forEach(p => {
+      const div = document.createElement('div');
+      div.className = 'product-card';
+      div.innerHTML = `
+        <h3>${p.name}</h3>
+        <p>Category: ${p.category}</p>
+        <p>Price: $${p.price}</p>
+        <p>Rating: <span class="rating">${renderStars(p.rating)}</span> (${p.rating.toFixed(1)})</p>
+      `;
+      container.appendChild(div);
+    });
+  }
+
+  function renderStars(rating) {
+    const fullStars = Math.floor(rating);
+    const halfStar = rating - fullStars >= 0.5;
+    let starsHTML = '';
+    for(let i = 0; i < fullStars; i++) starsHTML += '★';
+    if(halfStar) starsHTML += '☆';
+    for(let i = fullStars + (halfStar ? 1 : 0); i < 5; i++) starsHTML += '☆';
+    return starsHTML;
+  }
+
+  function applyFilters() {
+    let filtered = [...products];
+
+    // Filter category
+    if(filterCategory.value !== 'all') {
+      filtered = filtered.filter(p => p.category === filterCategory.value);
+    }
+
+    // Sort by price
+    if(sortPrice.value === 'low') filtered.sort((a,b) => a.price - b.price);
+    else if(sortPrice.value === 'high') filtered.sort((a,b) => b.price - a.price);
+
+    // Sort by rating
+    if(sortRating.value === 'low') filtered.sort((a,b) => a.rating - b.rating);
+    else if(sortRating.value === 'high') filtered.sort((a,b) => b.rating - a.rating);
+
+    renderProducts(filtered);
+  }
+
+  filterCategory.addEventListener('change', applyFilters);
+  sortPrice.addEventListener('change', () => {
+    // reset rating sorting if price sorting is applied
+    if(sortPrice.value !== 'default') sortRating.value = 'default';
+    applyFilters();
+  });
+  sortRating.addEventListener('change', () => {
+    // reset price sorting if rating sorting is applied
+    if(sortRating.value !== 'default') sortPrice.value = 'default';
+    applyFilters();
+  });
+
+  // Initial render
+  renderProducts(products);
+</script>
+
+</body>
+</html>
